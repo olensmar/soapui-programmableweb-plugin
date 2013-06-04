@@ -1,8 +1,7 @@
 package com.smartbear.restplugin
 
 class AddFromProgrammableWebTest extends GroovyTestCase {
-    void testGetEntries()
-    {
+    void testGetEntries() {
         def action = new AddWsdlFromProgrammableWebAction()
         def entries = action.initEntries()
 
@@ -10,14 +9,13 @@ class AddFromProgrammableWebTest extends GroovyTestCase {
 
         def cnt = 0
         entries.values().each { cnt += it.size() }
-        assertTrue( "Checking for at least 1500 APIs", cnt > 1500 )
+        assertTrue("Checking for at least 1500 APIs", cnt > 1500)
     }
 
-    void testGetWsdlEndpoint()
-    {
+    void testGetWsdlEndpoint() {
         def action = new AddWsdlFromProgrammableWebAction()
-        def wsdl = action.getWsdlEndpoint( "/api/4guysfromrolla.com" )
-        assertTrue( "Checking WSDL endpoint",wsdl.length() > 0 )
+        def wsdl = action.getWsdlEndpoint("/api/4guysfromrolla.com")
+        assertTrue("Checking WSDL endpoint", wsdl.length() > 0)
 
     }
 }

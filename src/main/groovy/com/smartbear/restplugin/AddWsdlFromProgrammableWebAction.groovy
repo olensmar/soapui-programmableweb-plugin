@@ -9,6 +9,7 @@ import com.eviware.x.dialogs.XProgressMonitor
 import com.eviware.x.form.XFormDialog
 import com.eviware.x.form.support.ADialogBuilder
 import groovyx.net.http.HTTPBuilder
+import org.apache.http.params.HttpConnectionParams
 
 import javax.swing.*
 import javax.swing.event.ListSelectionEvent
@@ -54,30 +55,24 @@ class AddWsdlFromProgrammableWebAction extends AbstractSoapUIAction<WsdlProject>
             dialog.getFormField(AddFromProgrammableWebForm.CATEGORY).setProperty("component", new JScrollPane(categoryList))
             dialog.getFormField(AddFromProgrammableWebForm.CATEGORY).setProperty("preferredSize", new Dimension(300, 100))
 
-            categoryList.addListSelectionListener(new ListSelectionListener()
-            {
-                public void valueChanged(ListSelectionEvent e) {
-                    Object category = categoryList.selectedValue
-                    if (apiEntries.containsKey(category)) {
-                        selectedEntries.clear()
-                        apiEntries.get(category).each { selectedEntries[it.name] = it }
-                        apiList.setListData(selectedEntries.keySet().toArray())
-                    }
+            categoryList.addListSelectionListener { ListSelectionEvent e ->
+                Object category = categoryList.selectedValue
+                if (apiEntries.containsKey(category)) {
+                    selectedEntries.clear()
+                    apiEntries.get(category).each { selectedEntries[it.name] = it }
+                    apiList.setListData(selectedEntries.keySet().toArray())
                 }
-            })
+            } as ListSelectionListener
 
-            apiList.addListSelectionListener(new ListSelectionListener()
-            {
-                public void valueChanged(ListSelectionEvent e) {
-                    Object entry = apiList.selectedValue
-                    if (selectedEntries.containsKey(entry)) {
-                        def apiEntry = selectedEntries[entry]
+            apiList.addListSelectionListener({ ListSelectionEvent e ->
+                Object entry = apiList.selectedValue
+                if (selectedEntries.containsKey(entry)) {
+                    def apiEntry = selectedEntries[entry]
 
-                        dialog.setValue(AddFromProgrammableWebForm.DESCRIPTION, apiEntry.description)
-                        dialog.setValue(AddFromProgrammableWebForm.WSDL, getWsdlEndpoint(apiEntry.id))
-                    }
+                    dialog.setValue(AddFromProgrammableWebForm.DESCRIPTION, apiEntry.description)
+                    dialog.setValue(AddFromProgrammableWebForm.WSDL, getWsdlEndpoint(apiEntry.id))
                 }
-            })
+            } as ListSelectionListener)
         }
 
         dialog.setValue(AddFromProgrammableWebForm.DESCRIPTION, "")
@@ -93,6 +88,11 @@ class AddWsdlFromProgrammableWebAction extends AbstractSoapUIAction<WsdlProject>
 
     def initEntries() {
         def http = new HTTPBuilder(System.getProperty(PROGRAMMABLEWEB_LISTING_URL, SOAP_LISTING_URL))
+        def params = http.client.params
+
+        HttpConnectionParams.setConnectionTimeout(params, 10000)
+        HttpConnectionParams.setSoTimeout(params, 10000)
+
         def html = http.get([:])
 
         html.depthFirst().findAll { it.name().toLowerCase() == "table" && it.@id == "apis" }.each

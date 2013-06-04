@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tns:soapui-actions xmlns:tns="http://eviware.com/soapui/config">
 
-<tns:action id="AddFromProgrammableWebAction" actionClass="com.smartbear.restplugin.AddWsdlFromProgrammableWebAction"/>
+    <tns:action id="AddFromProgrammableWebAction"
+                actionClass="com.smartbear.restplugin.AddWsdlFromProgrammableWebAction"/>
 
-<tns:actionGroup id="EnabledWsdlProjectActions">
-   <tns:actionMapping actionId="AddFromProgrammableWebAction" position="AFTER" positionRef="AddWadlAction"/>
-</tns:actionGroup>
+    <tns:actionGroup id="EnabledWsdlProjectActions">
+        <tns:actionMapping actionId="AddFromProgrammableWebAction" position="AFTER" positionRef="AddWadlAction"/>
+    </tns:actionGroup>
 
 </tns:soapui-actions>
